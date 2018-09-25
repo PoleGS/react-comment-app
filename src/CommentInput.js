@@ -1,19 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import wrapWithLoadData from './wrapWithLoadData';
 
 class CommentInput extends React.Component{
     static propTypes = {
-        onSubmit: PropTypes.func
-    }
-    constructor() {
-        super();
+        onSubmit: PropTypes.func,
+        data: PropTypes.any,
+        saveData: PropTypes.func.isRequired
+    };
+
+    constructor(props) {
+        super(props);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleContentChange = this.handleContentChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleUsernameBlur = this.handleUsernameBlur.bind(this);
         this.state = {
-            username: '',
+            username: props.data,
             content: ''
         }
     }
@@ -43,23 +47,9 @@ class CommentInput extends React.Component{
         })
     };
 
-    _saveUsername (username) {
-        localStorage.setItem('username', username);
-    }
 
     handleUsernameBlur (event) {
-        this._saveUsername(event.target.value);
-    }
-
-    _loadUsername () {
-        const username = localStorage.getItem('username');
-        if (username){
-            this.setState({username});
-        }
-    }
-
-    componentWillMount (){
-        this._loadUsername();
+        this.props.saveData(event.target.value)
     }
 
     componentDidMount (){
@@ -97,4 +87,5 @@ class CommentInput extends React.Component{
     }
 }
 
+CommentInput = wrapWithLoadData(CommentInput, 'username');
 export default CommentInput;
